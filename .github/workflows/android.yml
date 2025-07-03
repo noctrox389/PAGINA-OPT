@@ -28,14 +28,16 @@ jobs:
       - name: Create buildozer.spec
         run: |
           if [ ! -f buildozer.spec ]; then
-            echo "[app]
+            cat <<EOF > buildozer.spec
+[app]
 title = SpriteTools
 package.name = spritetools
 package.domain = org.example
 source.dir = .
 version = 1.0
 requirements = python3, kivy, pillow, tqdm
-android.permissions = INTERNET, WRITE_EXTERNAL_STORAGE" > buildozer.spec
+android.permissions = INTERNET, WRITE_EXTERNAL_STORAGE
+EOF
           fi
       
       - name: Build APK
