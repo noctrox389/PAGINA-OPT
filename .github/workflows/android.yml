@@ -1,37 +1,44 @@
-name: Build APK
+namename: Build APK
 
 on:
   push:
     branches: [ main ]
-  workflow_dispatch:    # ¡Esto activa el botón manual!
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      
       - uses: actions/setup-python@v5
         with:
           python-version: '3.10'
       
-      - name: Install dependencies
+      - name: Install Buildozer dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo5 cmake
+          sudo apt-get install -y \
+            git zip unzip openjdk-17-jdk \
+            python3-pip autoconf libtool \
+            pkg-config zlib1g-dev libncurses5-dev \
+            libncursesw5-dev libtinfo5 cmake
           pip install buildozer cython==0.29.19
       
-      - name: Setup Buildozer spec
+      - name: Create buildozer.spec
         run: |
           if [ ! -f buildozer.spec ]; then
-            echo "[app]" > buildozer.spec
-            echo "title = SpriteTools" >> buildozer.spec
-            echo "package.name = spritetools" >> buildozer.spec
-            echo "package.domain = org.example" >> buildozer.spec
-            echo "requirements = python3, kivy, pillow, tqdm" >> buildozer.spec
-            echo "android.permissions = INTERNET, WRITE_EXTERNAL_STORAGE" >> buildozer.spec
+            echo "[app]
+title = SpriteTools
+package.name = spritetools
+package.domain = org.example
+source.dir = .
+version = 1.0
+requirements = python3, kivy, pillow, tqdm
+android.permissions = INTERNET, WRITE_EXTERNAL_STORAGE" > buildozer.spec
           fi
       
-      - name: Run Buildozer
+      - name: Build APK
         run: |
           buildozer -v android debug
       
