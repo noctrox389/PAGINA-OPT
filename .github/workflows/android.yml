@@ -1,4 +1,4 @@
-namename: Build APK
+name: Build APK
 
 on:
   push:
@@ -14,6 +14,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.10'
+      
       - name: Install Buildozer dependencies
         run: |
           sudo apt-get update
@@ -23,21 +24,24 @@ jobs:
             pkg-config zlib1g-dev libncurses5-dev \
             libncursesw5-dev libtinfo5 cmake
           pip install buildozer cython==0.29.19
+      
       - name: Create buildozer.spec
         run: |
           if [ ! -f buildozer.spec ]; then
             echo "[app]
-         title = SpriteTools
-         package.name = spritetools
-         package.domain = org.example
-         source.dir = .
-         version = 1.0
-         requirements = python3, kivy, pillow, tqdm
-         android.permissions = INTERNET, WRITE_EXTERNAL_STORAGE" > buildozer.spec
+title = SpriteTools
+package.name = spritetools
+package.domain = org.example
+source.dir = .
+version = 1.0
+requirements = python3, kivy, pillow, tqdm
+android.permissions = INTERNET, WRITE_EXTERNAL_STORAGE" > buildozer.spec
           fi
+      
       - name: Build APK
         run: |
           buildozer -v android debug
+      
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
