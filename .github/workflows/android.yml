@@ -9,21 +9,32 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4      # Versión actualizada
-      - uses: actions/setup-python@v5  # Versión actualizada
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
-          python-version: '3.10'       # Python 3.10 es más estable con Buildozer
+          python-version: '3.10'
+      
       - name: Install dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo5 cmake
           pip install buildozer cython==0.29.19
+      
+      - name: Setup Buildozer spec
+        run: |
+          if [ ! -f buildozer.spec ]; then
+            echo "[app]" > buildozer.spec
+            echo "title = SpriteTools" >> buildozer.spec
+            echo "package.name = spritetools" >> buildozer.spec
+            echo "package.domain = org.example" >> buildozer.spec
+            echo "requirements = python3, kivy, pillow, tqdm" >> buildozer.spec
+            echo "android.permissions = INTERNET, WRITE_EXTERNAL_STORAGE" >> buildozer.spec
+          fi
+      
       - name: Run Buildozer
         run: |
-          buildozer init
-          echo "requirements = python3, kivy, pillow, tqdm" >> buildozer.spec
-          echo "android.permissions = INTERNET, WRITE_EXTERNAL_STORAGE" >> buildozer.spec  # Permiso añadido
           buildozer -v android debug
+      
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
